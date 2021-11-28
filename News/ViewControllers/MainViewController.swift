@@ -6,22 +6,31 @@
 //
 
 import UIKit
+import SafariServices
 
 class MainViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
-    let newsRussia = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-    let newsUSA = [1, 2, 3, 4, 5]
+    var newsRussia: [Articles] = []
+    var newsUSA: [Articles] = []
 
     lazy var rowsToDisplay = newsRussia
     
+    lazy private var paddedStackView: UIStackView = {
+        let paddedStackView = UIStackView(arrangedSubviews: [segmentedControl])
+        paddedStackView.layoutMargins = .init(top: 12, left: 12, bottom: 12, right: 12)
+        paddedStackView.isLayoutMarginsRelativeArrangement = true
+        return paddedStackView
+    }()
+    
     lazy private var stackView: UIStackView = {
-        let stackView = UIStackView(arrangedSubviews: [segmentedControl, tableView])
+        let stackView = UIStackView(arrangedSubviews: [paddedStackView, tableView])
         stackView.axis = .vertical
         return stackView
     }()
     
     lazy private var segmentedControl: UISegmentedControl = {
         let segmentedControl = UISegmentedControl(items: ["Russia", "USA"])
+        segmentedControl.backgroundColor = #colorLiteral(red: 0.9098039269, green: 0.4784313738, blue: 0.6431372762, alpha: 1)
         segmentedControl.selectedSegmentIndex = 0
         segmentedControl.addTarget(self, action: #selector(changeSegmentControl), for: .valueChanged)
         return segmentedControl
@@ -29,12 +38,15 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     lazy private var tableView: UITableView = {
         let tableView = UITableView()
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "NewsCell")
+        tableView.register(ArticleCell.self, forCellReuseIdentifier: ArticleCell.cellID)
         return tableView
     }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        view.backgroundColor = .white
+        title = "News"
         
         view.addSubview(stackView)
         setStackViewConstraints()
@@ -42,8 +54,7 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
         tableView.delegate = self
         tableView.dataSource = self
         
-        view.backgroundColor = .white
-        title = "Hello"
+        getNews()
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -51,12 +62,25 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "NewsCell", for: indexPath)
-        cell.textLabel?.text = "\(rowsToDisplay[indexPath.row])"
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: ArticleCell.cellID, for: indexPath) as? ArticleCell else { return UITableViewCell() }
+        
+        let news = rowsToDisplay[indexPath.row]
+        cell.configure(cell: cell, news: news)
+        
         return cell
     }
     
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        
+        let news = rowsToDisplay[indexPath.row]
+        guard let newsURL = URL(string: news.url ?? "") else { return }
+        let safariViewController = SFSafariViewController(url: newsURL)
+        present(safariViewController, animated: true)
+    }
+    
     @objc private func changeSegmentControl() {
+        
         rowsToDisplay = segmentedControl.selectedSegmentIndex == 0 ? newsRussia : newsUSA
         tableView.reloadData()
     }
@@ -68,6 +92,21 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
             stackView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
             stackView.widthAnchor.constraint(equalTo: view.widthAnchor)
         ])
+    }
+}
+
+extension MainViewController {
+    private func getNews() {
+        NetworkManager.shared.fetchNews(url: NetworkManager.shared.url) { result in
+            switch result {
+            case .success(let info):
+                self.newsRussia = info.articles ?? []
+                self.rowsToDisplay = self.newsRussia
+                self.tableView.reloadData()
+            case .failure(let error):
+                print(error)
+            }
+        }
     }
 }
 
