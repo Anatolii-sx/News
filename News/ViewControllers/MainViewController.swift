@@ -8,12 +8,10 @@
 import UIKit
 import SafariServices
 
+@available(iOS 13.0, *)
 class MainViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
-    var newsRussia: [Articles] = []
-    var newsUSA: [Articles] = []
-
-    lazy var rowsToDisplay = newsRussia
+    private var news: [Article] = []
     
     lazy private var paddedStackView: UIStackView = {
         let paddedStackView = UIStackView(arrangedSubviews: [segmentedControl])
@@ -29,9 +27,14 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
     }()
     
     lazy private var segmentedControl: UISegmentedControl = {
-        let segmentedControl = UISegmentedControl(items: ["Russia", "USA"])
-        segmentedControl.backgroundColor = #colorLiteral(red: 0.9098039269, green: 0.4784313738, blue: 0.6431372762, alpha: 1)
+        let segmentedControl = UISegmentedControl(items: ["🇷🇺 Russia", "🇺🇸 USA"])
+        segmentedControl.backgroundColor = .white
+        segmentedControl.selectedSegmentTintColor = #colorLiteral(red: 0.9098039269, green: 0.4784313738, blue: 0.6431372762, alpha: 1)
         segmentedControl.selectedSegmentIndex = 0
+        segmentedControl.setTitleTextAttributes([NSAttributedString.Key.font : UIFont.systemFont(ofSize: 18, weight: .regular), NSAttributedString.Key.foregroundColor: UIColor.purple], for: .normal)
+        segmentedControl.setTitleTextAttributes([NSAttributedString.Key.font : UIFont.systemFont(ofSize: 18, weight: .semibold), NSAttributedString.Key.foregroundColor: UIColor.white], for: .selected)
+        segmentedControl.layer.borderColor = CGColor(red: 232/255, green: 122/255, blue: 164/255, alpha: 1)
+        segmentedControl.layer.borderWidth = 1
         segmentedControl.addTarget(self, action: #selector(changeSegmentControl), for: .valueChanged)
         return segmentedControl
     }()
@@ -58,13 +61,13 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        rowsToDisplay.count
+        news.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: ArticleCell.cellID, for: indexPath) as? ArticleCell else { return UITableViewCell() }
         
-        let news = rowsToDisplay[indexPath.row]
+        let news = news[indexPath.row]
         cell.configure(cell: cell, news: news)
         
         return cell
@@ -73,16 +76,15 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         
-        let news = rowsToDisplay[indexPath.row]
+        let news = news[indexPath.row]
         guard let newsURL = URL(string: news.url ?? "") else { return }
         let safariViewController = SFSafariViewController(url: newsURL)
         present(safariViewController, animated: true)
     }
     
     @objc private func changeSegmentControl() {
-        
-        rowsToDisplay = segmentedControl.selectedSegmentIndex == 0 ? newsRussia : newsUSA
-        tableView.reloadData()
+        changeCountry()
+        getNews()
     }
     
     private func setStackViewConstraints() {
@@ -95,13 +97,20 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
 }
 
+@available(iOS 13.0, *)
 extension MainViewController {
+    
+    private func changeCountry() {
+        NetworkManager.shared.country = segmentedControl.selectedSegmentIndex == 0
+        ? Countries.ru
+        : Countries.us
+    }
+    
     private func getNews() {
         NetworkManager.shared.fetchNews(url: NetworkManager.shared.url) { result in
             switch result {
             case .success(let info):
-                self.newsRussia = info.articles ?? []
-                self.rowsToDisplay = self.newsRussia
+                self.news = info.articles ?? []
                 self.tableView.reloadData()
             case .failure(let error):
                 print(error)

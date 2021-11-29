@@ -7,6 +7,10 @@
 
 import Foundation
 
+enum Countries {
+    case ru, us
+}
+
 enum NetworkError: Error {
     case invalidURL
     case noData
@@ -17,15 +21,11 @@ class NetworkManager {
     static let shared = NetworkManager()
     
     private let token = "d44f0aea780a4c3ca5ab14697a86d904"
+    var country = Countries.ru
     
     var url: String {
-    "https://newsapi.org/v2/top-headlines?country=ru&from=2021-11-28&sortBy=popularity&pageSize=10&page=1&apiKey=\(token)"
+    "https://newsapi.org/v2/top-headlines?country=\(country)&from=2021-11-28&sortBy=popularity&pageSize=10&page=1&apiKey=\(token)"
     }
-    
-//    var urlUs: String {
-//    "https://newsapi.org/v2/top-headlines?country=us&from=2021-11-28&sortBy=popularity&pageSize=10&page=1&apiKey=\(token)"
-//    }
-    
     
     private init() {}
     

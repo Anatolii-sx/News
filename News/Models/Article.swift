@@ -8,10 +8,10 @@
 struct News: Decodable {
     let status: String?
     let totalResults: Int?
-    let articles: [Articles]?
+    let articles: [Article]?
 }
 
-struct Articles: Decodable {
+struct Article: Decodable {
     let title: String?
     let description: String?
     let urlToImage: String?
