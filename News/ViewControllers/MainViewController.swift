@@ -28,13 +28,19 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     lazy private var segmentedControl: UISegmentedControl = {
         let segmentedControl = UISegmentedControl(items: ["🇷🇺 Russia", "🇺🇸 USA"])
-        segmentedControl.backgroundColor = .white
-        segmentedControl.selectedSegmentTintColor = #colorLiteral(red: 0.9098039269, green: 0.4784313738, blue: 0.6431372762, alpha: 1)
+        segmentedControl.backgroundColor = #colorLiteral(red: 0.9098039269, green: 0.4784313738, blue: 0.6431372762, alpha: 0.2002535182)
+        segmentedControl.selectedSegmentTintColor = #colorLiteral(red: 0.8549019694, green: 0.250980407, blue: 0.4784313738, alpha: 0.7012882864)
         segmentedControl.selectedSegmentIndex = 0
-        segmentedControl.setTitleTextAttributes([NSAttributedString.Key.font : UIFont.systemFont(ofSize: 18, weight: .regular), NSAttributedString.Key.foregroundColor: UIColor.purple], for: .normal)
-        segmentedControl.setTitleTextAttributes([NSAttributedString.Key.font : UIFont.systemFont(ofSize: 18, weight: .semibold), NSAttributedString.Key.foregroundColor: UIColor.white], for: .selected)
-        segmentedControl.layer.borderColor = CGColor(red: 232/255, green: 122/255, blue: 164/255, alpha: 1)
-        segmentedControl.layer.borderWidth = 1
+        segmentedControl.setTitleTextAttributes(
+            [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 18,weight: .regular),
+             NSAttributedString.Key.foregroundColor: UIColor.black],
+            for: .normal
+        )
+        segmentedControl.setTitleTextAttributes(
+            [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 18, weight: .regular),
+             NSAttributedString.Key.foregroundColor: UIColor.white],
+            for: .selected
+        )
         segmentedControl.addTarget(self, action: #selector(changeSegmentControl), for: .valueChanged)
         return segmentedControl
     }()
@@ -58,6 +64,13 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
         tableView.dataSource = self
         
         getNews()
+    }
+    
+    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        if scrollView.contentOffset.y > scrollView.contentSize.height - scrollView.frame.height * 1.1 {
+            changePage(restart: false)
+            getNews()
+        }
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -84,7 +97,13 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     @objc private func changeSegmentControl() {
         changeCountry()
+        clearListOfNews()
         getNews()
+    }
+    
+    private func clearListOfNews() {
+        news = []
+        changePage(restart: true)
     }
     
     private func setStackViewConstraints() {
@@ -106,11 +125,19 @@ extension MainViewController {
         : Countries.us
     }
     
+    private func changePage(restart: Bool) {
+        if restart {
+            NetworkManager.shared.page = 1
+        } else {
+            NetworkManager.shared.page += 1
+        }
+    }
+    
     private func getNews() {
         NetworkManager.shared.fetchNews(url: NetworkManager.shared.url) { result in
             switch result {
             case .success(let info):
-                self.news = info.articles ?? []
+                info.articles?.forEach { self.news.append($0) }
                 self.tableView.reloadData()
             case .failure(let error):
                 print(error)

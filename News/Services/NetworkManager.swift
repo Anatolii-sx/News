@@ -20,11 +20,13 @@ enum NetworkError: Error {
 class NetworkManager {
     static let shared = NetworkManager()
     
-    private let token = "d44f0aea780a4c3ca5ab14697a86d904"
+//    private let token = "d44f0aea780a4c3ca5ab14697a86d904"
+    private let token = "35d0b5eef7e44127a1a1c570f8d158b6"
     var country = Countries.ru
+    var page = 1
     
     var url: String {
-    "https://newsapi.org/v2/top-headlines?country=\(country)&from=2021-11-28&sortBy=popularity&pageSize=10&page=1&apiKey=\(token)"
+    "https://newsapi.org/v2/top-headlines?country=\(country)&from=2021-11-28&sortBy=popularity&pageSize=7&page=\(page)&apiKey=\(token)"
     }
     
     private init() {}
