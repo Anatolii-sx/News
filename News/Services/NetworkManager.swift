@@ -8,7 +8,11 @@
 import Foundation
 
 enum Countries {
-    case ru, us
+    case ru, us, eu
+}
+
+enum Language {
+    case ru, en
 }
 
 enum NetworkError: Error {
@@ -20,18 +24,34 @@ enum NetworkError: Error {
 class NetworkManager {
     static let shared = NetworkManager()
     
-//    private let token = "d44f0aea780a4c3ca5ab14697a86d904"
-    private let token = "35d0b5eef7e44127a1a1c570f8d158b6"
+    private let token = "byGRBCiwcNwLuktoITblPykiz0SUgeZih5ZzISMbWfa2Dxaj"
     var country = Countries.ru
+    var language = Language.ru
     var page = 1
     
+    var searchKeyword = ""
+    var searchLink: String {
+        "search?keywords=\(searchKeyword)&"
+    }
+    
+    var main: String {
+        searchKeyword.isEmpty ? "latest-news?": searchLink
+    }
+    
     var url: String {
-    "https://newsapi.org/v2/top-headlines?country=\(country)&from=2021-11-28&sortBy=popularity&pageSize=7&page=\(page)&apiKey=\(token)"
+    "https://api.currentsapi.services/v1/"
+        + main
+//        + "latest-news?"
+        + "page_number=\(page)"
+        + "&page_size=7"
+        + "&country=\(country)"
+        + "&language=\(language)"
+        + "&apiKey=\(token)"
     }
     
     private init() {}
     
-    func fetchNews(url: String, completion: @escaping (Result<News, NetworkError>) -> Void) {
+    func fetchNews(url: String, completion: @escaping (Result<ObtainedInfo, NetworkError>) -> Void) {
         guard let url = URL(string: url) else {
             completion(.failure(.invalidURL))
             return
@@ -45,7 +65,7 @@ class NetworkManager {
             }
             
             do {
-                let info = try JSONDecoder().decode(News.self, from: data)
+                let info = try JSONDecoder().decode(ObtainedInfo.self, from: data)
                 DispatchQueue.main.async {
                     completion(.success(info))
                 }

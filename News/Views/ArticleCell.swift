@@ -43,10 +43,10 @@ class ArticleCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func configure(cell: UITableViewCell, news: Article) {
+    func configure(cell: UITableViewCell, news: News) {
         titleLabel.text = news.title
         subtitleLabel.text = news.description
-        photo.fetchImage(from: news.urlToImage ?? "")
+        photo.fetchImage(from: news.image ?? "")
     }
     
     private func addSubviews(_ views: UIView...) {

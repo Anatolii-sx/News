@@ -9,9 +9,10 @@ import UIKit
 import SafariServices
 
 @available(iOS 13.0, *)
-class MainViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class MainViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate {
     
-    private var news: [Article] = []
+    private var news: [News] = []
+    private let searchVC = UISearchController(searchResultsController: nil)
     
     lazy private var paddedStackView: UIStackView = {
         let paddedStackView = UIStackView(arrangedSubviews: [segmentedControl])
@@ -27,17 +28,17 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
     }()
     
     lazy private var segmentedControl: UISegmentedControl = {
-        let segmentedControl = UISegmentedControl(items: ["🇷🇺 Russia", "🇺🇸 USA"])
+        let segmentedControl = UISegmentedControl(items: ["🇷🇺 Russia", "🇪🇺 Europe", "🇺🇸 USA"])
         segmentedControl.backgroundColor = #colorLiteral(red: 0.9098039269, green: 0.4784313738, blue: 0.6431372762, alpha: 0.2002535182)
         segmentedControl.selectedSegmentTintColor = #colorLiteral(red: 0.8549019694, green: 0.250980407, blue: 0.4784313738, alpha: 0.7012882864)
         segmentedControl.selectedSegmentIndex = 0
         segmentedControl.setTitleTextAttributes(
-            [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 18,weight: .regular),
+            [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 16,weight: .regular),
              NSAttributedString.Key.foregroundColor: UIColor.black],
             for: .normal
         )
         segmentedControl.setTitleTextAttributes(
-            [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 18, weight: .regular),
+            [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 16, weight: .regular),
              NSAttributedString.Key.foregroundColor: UIColor.white],
             for: .selected
         )
@@ -55,10 +56,12 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
         super.viewDidLoad()
         
         view.backgroundColor = .white
-        title = "News"
+//        navigationController?.title = "News"
+//        navigationController?.topViewController?.title = "News"
         
         view.addSubview(stackView)
         setStackViewConstraints()
+        createSearchBar()
     
         tableView.delegate = self
         tableView.dataSource = self
@@ -95,10 +98,29 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
         present(safariViewController, animated: true)
     }
     
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        guard let text = searchBar.text, !text.isEmpty else { return }
+        NetworkManager.shared.searchKeyword = text
+        clearListOfNews()
+        getNews()
+        print(text)
+    }
+    
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        NetworkManager.shared.searchKeyword = ""
+        clearListOfNews()
+        getNews()
+    }
+    
     @objc private func changeSegmentControl() {
         changeCountry()
         clearListOfNews()
         getNews()
+    }
+    
+    private func createSearchBar() {
+        navigationItem.searchController = searchVC
+        searchVC.searchBar.delegate = self
     }
     
     private func clearListOfNews() {
@@ -120,9 +142,17 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
 extension MainViewController {
     
     private func changeCountry() {
-        NetworkManager.shared.country = segmentedControl.selectedSegmentIndex == 0
-        ? Countries.ru
-        : Countries.us
+        switch segmentedControl.selectedSegmentIndex {
+        case 0:
+            NetworkManager.shared.country = Countries.ru
+            NetworkManager.shared.language = Language.ru
+        case 1:
+            NetworkManager.shared.country = Countries.eu
+            NetworkManager.shared.language = Language.en
+        default:
+            NetworkManager.shared.country = Countries.us
+            NetworkManager.shared.language = Language.en
+        }
     }
     
     private func changePage(restart: Bool) {
@@ -137,7 +167,7 @@ extension MainViewController {
         NetworkManager.shared.fetchNews(url: NetworkManager.shared.url) { result in
             switch result {
             case .success(let info):
-                info.articles?.forEach { self.news.append($0) }
+                info.news?.forEach { self.news.append($0) }
                 self.tableView.reloadData()
             case .failure(let error):
                 print(error)

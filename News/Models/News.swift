@@ -5,15 +5,15 @@
 //  Created by Анатолий Миронов on 28.11.2021.
 //
 
-struct News: Decodable {
+struct ObtainedInfo: Decodable {
     let status: String?
-    let totalResults: Int?
-    let articles: [Article]?
+    let news: [News]?
+    let page: Int?
 }
 
-struct Article: Decodable {
+struct News: Decodable {
     let title: String?
     let description: String?
-    let urlToImage: String?
+    let image: String?
     let url: String?
 }
