@@ -103,7 +103,6 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
         NetworkManager.shared.searchKeyword = text
         clearListOfNews()
         getNews()
-        print(text)
     }
     
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {

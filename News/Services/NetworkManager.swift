@@ -41,7 +41,6 @@ class NetworkManager {
     var url: String {
     "https://api.currentsapi.services/v1/"
         + main
-//        + "latest-news?"
         + "page_number=\(page)"
         + "&page_size=7"
         + "&country=\(country)"
@@ -54,6 +53,7 @@ class NetworkManager {
     func fetchNews(url: String, completion: @escaping (Result<ObtainedInfo, NetworkError>) -> Void) {
         guard let url = URL(string: url) else {
             completion(.failure(.invalidURL))
+            print(url)
             return
         }
         
@@ -82,6 +82,16 @@ class ImageManager {
     private init() {}
     
     func fetchImage(from url: URL, completion: @escaping(Data, URLResponse) -> Void) {
+//        var currentURL = url.absoluteString
+//        if currentURL.contains("//cdnimg.rg.ru") {
+//            let url = currentURL.replacingOccurrences(of: "//cdnimg.rg.ru", with: "https://cdnimg.rg.ru")
+//            currentURL = url
+//            print(currentURL)
+//        }
+//        // OPTIONAL !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+//        let newURL = URL(string: currentURL)!
+//        print(newURL)
+        
         URLSession.shared.dataTask(with: url) { data, response, error in
             guard let data = data, let response = response else {
                 print(error?.localizedDescription ?? "No error description")
@@ -93,6 +103,10 @@ class ImageManager {
             DispatchQueue.main.async {
                 completion(data, response)
             }
+            
+            
+            
+            
             
         }.resume()
     }

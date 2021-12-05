@@ -17,7 +17,7 @@
 		9CA0EF83274EA80700BE305E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9CA0EF82274EA80700BE305E /* Assets.xcassets */; };
 		9CA0EF86274EA80700BE305E /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9CA0EF84274EA80700BE305E /* LaunchScreen.storyboard */; };
 		9CCF7B4A275948F500C7A53A /* TabBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CCF7B49275948F500C7A53A /* TabBarViewController.swift */; };
-		9CCF7B4C2759515B00C7A53A /* CategoriesCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CCF7B4B2759515B00C7A53A /* CategoriesCollectionViewController.swift */; };
+		9CCF7B4C2759515B00C7A53A /* CategoriesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CCF7B4B2759515B00C7A53A /* CategoriesViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -33,7 +33,7 @@
 		9CA0EF85274EA80700BE305E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		9CA0EF87274EA80700BE305E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9CCF7B49275948F500C7A53A /* TabBarViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarViewController.swift; sourceTree = "<group>"; };
-		9CCF7B4B2759515B00C7A53A /* CategoriesCollectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoriesCollectionViewController.swift; sourceTree = "<group>"; };
+		9CCF7B4B2759515B00C7A53A /* CategoriesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoriesViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -109,7 +109,7 @@
 			children = (
 				9CA0EF7D274EA80500BE305E /* MainViewController.swift */,
 				9CCF7B49275948F500C7A53A /* TabBarViewController.swift */,
-				9CCF7B4B2759515B00C7A53A /* CategoriesCollectionViewController.swift */,
+				9CCF7B4B2759515B00C7A53A /* CategoriesViewController.swift */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -209,7 +209,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9CCF7B4A275948F500C7A53A /* TabBarViewController.swift in Sources */,
-				9CCF7B4C2759515B00C7A53A /* CategoriesCollectionViewController.swift in Sources */,
+				9CCF7B4C2759515B00C7A53A /* CategoriesViewController.swift in Sources */,
 				9C368CC0275403E7009439E6 /* ArticleImageView.swift in Sources */,
 				9C368CBB27539DE6009439E6 /* News.swift in Sources */,
 				9CA0EF7E274EA80500BE305E /* MainViewController.swift in Sources */,

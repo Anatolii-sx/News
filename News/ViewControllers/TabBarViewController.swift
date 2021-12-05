@@ -15,7 +15,7 @@ class TabBarViewController: UITabBarController {
         super.viewDidLoad()
         
         let mainVC = UINavigationController(rootViewController: MainViewController())
-        let categoriesVC = UINavigationController(rootViewController: CategoriesCollectionViewController())
+        let categoriesVC = UINavigationController(rootViewController: CategoriesViewController())
         mainVC.title = "Main"
         categoriesVC.title = "Categories"
         
@@ -35,8 +35,6 @@ class TabBarViewController: UITabBarController {
         
         tabBar.selectedItem?.badgeValue = "1"
         UITabBar.appearance().tintColor = #colorLiteral(red: 0.8549019694, green: 0.250980407, blue: 0.4784313738, alpha: 0.7012882864)
-        
-        
     }
 
 }
