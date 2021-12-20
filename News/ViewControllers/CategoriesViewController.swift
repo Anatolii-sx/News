@@ -7,21 +7,23 @@
 
 import UIKit
 
-
-class CategoriesViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate {
+class CategoriesViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, UISearchBarDelegate {
+    
+    private let categories = ["business", "entertainment", "general", "health", "science", "sports", "technology"]
+    private let searchVC = UISearchController(searchResultsController: nil)
     
     lazy private var collectionViewFlowLayout: UICollectionViewFlowLayout = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .vertical
-        layout.minimumLineSpacing = 10
-        layout.minimumInteritemSpacing = 1
-        layout.itemSize = CGSize(width: view.frame.size.width / 2 - 1, height: view.frame.size.height / 2 - 1)
+        layout.minimumLineSpacing = 2
+        layout.minimumInteritemSpacing = 2
+        layout.itemSize = CGSize(width: view.frame.size.width / 2.1 - 1, height: view.frame.size.height / 3.5 - 1)
         return layout
     }()
     
     lazy private var collectionView: UICollectionView = {
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: collectionViewFlowLayout)
-        collectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "Cell")
+        collectionView.register(CategoryViewCell.self, forCellWithReuseIdentifier: CategoryViewCell.cellID)
         return collectionView
     }()
 
@@ -34,60 +36,58 @@ class CategoriesViewController: UIViewController, UICollectionViewDataSource, UI
         view.addSubview(collectionView)
         setCollectionViewConstraints()
         
+        createSearchBar()
+        collectionView.showsVerticalScrollIndicator = false
+        
 //        collectionView.frame = view.bounds
     }
 
     // MARK: UICollectionViewDataSource
-
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 10
+        categories.count
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath)
-        cell.contentView.backgroundColor = .systemBlue
-//        cell.frame.size = CGSize(width: 150, height: 200)
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CategoryViewCell.cellID, for: indexPath) as? CategoryViewCell else { return UICollectionViewCell() }
+        
+        let category = categories[indexPath.row]
+        cell.configure(cell: cell, category: category)
         return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let categoryVC = MainViewController()
+        NetworkManager.shared.category = categories[indexPath.row]
+//        present(categoryVC, animated: true)
+                navigationController?.pushViewController(categoryVC, animated: true)
     }
     
     private func setCollectionViewConstraints() {
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             collectionView.topAnchor.constraint(equalTo: view.topAnchor),
-            collectionView.widthAnchor.constraint(equalTo: view.widthAnchor),
+            collectionView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 8),
+            collectionView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -8),
+//            collectionView.widthAnchor.constraint(equalTo: view.widthAnchor),
             collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
     }
-
-    // MARK: UICollectionViewDelegate
-
-    /*
-    // Uncomment this method to specify if the specified item should be highlighted during tracking
-    override func collectionView(_ collectionView: UICollectionView, shouldHighlightItemAt indexPath: IndexPath) -> Bool {
-        return true
-    }
-    */
-
-    /*
-    // Uncomment this method to specify if the specified item should be selected
-    override func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
-        return true
-    }
-    */
-
-    /*
-    // Uncomment these methods to specify if an action menu should be displayed for the specified item, and react to actions performed on the item
-    override func collectionView(_ collectionView: UICollectionView, shouldShowMenuForItemAt indexPath: IndexPath) -> Bool {
-        return false
-    }
-
-    override func collectionView(_ collectionView: UICollectionView, canPerformAction action: Selector, forItemAt indexPath: IndexPath, withSender sender: Any?) -> Bool {
-        return false
-    }
-
-    override func collectionView(_ collectionView: UICollectionView, performAction action: Selector, forItemAt indexPath: IndexPath, withSender sender: Any?) {
     
+    private func createSearchBar() {
+        navigationItem.searchController = searchVC
+        searchVC.searchBar.delegate = self
     }
-    */
+    
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        guard let text = searchBar.text, !text.isEmpty else { return }
+//        NetworkManager.shared.searchKeyword = text
+    }
+    
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+//        NetworkManager.shared.searchKeyword = ""
+    }
+
+    
+    
 
 }

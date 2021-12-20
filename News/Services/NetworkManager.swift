@@ -8,12 +8,12 @@
 import Foundation
 
 enum Countries {
-    case ru, us, eu
+    case ru, us
 }
 
-enum Language {
-    case ru, en
-}
+//enum Language {
+//    case ru, en
+//}
 
 enum NetworkError: Error {
     case invalidURL
@@ -24,27 +24,29 @@ enum NetworkError: Error {
 class NetworkManager {
     static let shared = NetworkManager()
     
-    private let token = "byGRBCiwcNwLuktoITblPykiz0SUgeZih5ZzISMbWfa2Dxaj"
+    private let token = "d44f0aea780a4c3ca5ab14697a86d904"
+//    private let token = "35d0b5eef7e44127a1a1c570f8d158b6"
+    
     var country = Countries.ru
-    var language = Language.ru
+    var category = ""
     var page = 1
-    
-    var searchKeyword = ""
-    var searchLink: String {
-        "search?keywords=\(searchKeyword)&"
-    }
-    
-    var main: String {
-        searchKeyword.isEmpty ? "latest-news?": searchLink
-    }
+
+//    var searchKeyword = ""
+//    var searchLink: String {
+//        "&q=\(searchKeyword)"
+//    }
+//
+//    var searchLinkFinished: String {
+//        searchKeyword.isEmpty ? "" : searchLink
+//    }
     
     var url: String {
-    "https://api.currentsapi.services/v1/"
-        + main
-        + "page_number=\(page)"
-        + "&page_size=7"
-        + "&country=\(country)"
-        + "&language=\(language)"
+        "https://newsapi.org/v2/top-headlines?"
+        + "country=\(country)"
+        + "&category=\(category)"
+        + "&sortBy=publishedAt"
+        + "&pageSize=7"
+        + "&page=\(page)"
         + "&apiKey=\(token)"
     }
     
@@ -82,16 +84,6 @@ class ImageManager {
     private init() {}
     
     func fetchImage(from url: URL, completion: @escaping(Data, URLResponse) -> Void) {
-//        var currentURL = url.absoluteString
-//        if currentURL.contains("//cdnimg.rg.ru") {
-//            let url = currentURL.replacingOccurrences(of: "//cdnimg.rg.ru", with: "https://cdnimg.rg.ru")
-//            currentURL = url
-//            print(currentURL)
-//        }
-//        // OPTIONAL !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-//        let newURL = URL(string: currentURL)!
-//        print(newURL)
-        
         URLSession.shared.dataTask(with: url) { data, response, error in
             guard let data = data, let response = response else {
                 print(error?.localizedDescription ?? "No error description")
@@ -103,11 +95,6 @@ class ImageManager {
             DispatchQueue.main.async {
                 completion(data, response)
             }
-            
-            
-            
-            
-            
         }.resume()
     }
 }

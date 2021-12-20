@@ -2,7 +2,7 @@
 //  ArticleImageView.swift
 //  News
 //
-//  Created by Анатолий Миронов on 28.11.2021.
+//  Created by Анатолий Миронов on 20.12.2021.
 //
 
 import UIKit
