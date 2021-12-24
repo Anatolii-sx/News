@@ -9,8 +9,18 @@ import UIKit
 import SafariServices
 
 class MainViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+    // MARK: - Public Properties
+    var navigationTitle = "General"
     
+    // MARK: - Private Properties
     private var news: [Article] = []
+    
+    // MARK: - Views
+    lazy private var activityIndicator: UIActivityIndicatorView = {
+        let activityIndicator = UIActivityIndicatorView()
+        activityIndicator.style = .medium
+        return activityIndicator
+    }()
     
     lazy private var paddedStackView: UIStackView = {
         let paddedStackView = UIStackView(arrangedSubviews: [segmentedControl])
@@ -50,27 +60,26 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
         return tableView
     }()
     
+    // MARK: - Override Methods
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         view.backgroundColor = .white
-//        navigationController?.title = "News"
-//        navigationController?.topViewController?.title = "News"
+        title = navigationTitle
         
         view.addSubview(stackView)
+        view.addSubview(activityIndicator)
+        
         setStackViewConstraints()
+        setActivityIndicatorConstraints()
+        
         tableView.delegate = self
         tableView.dataSource = self
+
+        setupRefreshControl()
         getNews()
     }
     
-    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
-        if scrollView.contentOffset.y > scrollView.contentSize.height - scrollView.frame.height * 1.1 {
-            changePage(restart: false)
-            getMoreNews()
-        }
-    }
-    
+    // MARK: - UITableViewDelegate, UITableViewDataSource
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         news.count
     }
@@ -93,6 +102,15 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
         present(safariViewController, animated: true)
     }
     
+    // MARK: - scrollViewDidEndDragging
+    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        if scrollView.contentOffset.y > scrollView.contentSize.height - scrollView.frame.height * 1.1 {
+            changePage(restart: false)
+            getMoreNews()
+        }
+    }
+    
+    // MARK: - Private Methods
     @objc private func changeSegmentControl() {
         changeCountry()
         clearListOfNews()
@@ -101,6 +119,7 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     private func clearListOfNews() {
         news = []
+        tableView.reloadData()
         changePage(restart: true)
     }
     
@@ -112,8 +131,32 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
             stackView.widthAnchor.constraint(equalTo: view.widthAnchor)
         ])
     }
+    
+    private func setActivityIndicatorConstraints() {
+        activityIndicator.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+        ])
+    }
 }
 
+// MARK: - Refresh Controll
+extension MainViewController {
+    private func setupRefreshControl() {
+        tableView.refreshControl = UIRefreshControl()
+        tableView.refreshControl?.transform = CGAffineTransform(scaleX: 0.75, y: 0.75)
+        tableView.refreshControl?.attributedTitle = NSAttributedString(string: "Pull to refresh")
+        tableView.refreshControl?.addTarget(self, action: #selector(getLastNews), for: .valueChanged)
+    }
+    
+    @objc private func getLastNews() {
+        clearListOfNews()
+        getNews()
+    }
+}
+
+// MARK: - Private Properties Of Getting News
 extension MainViewController {
     
     private func changeCountry() {
@@ -134,10 +177,17 @@ extension MainViewController {
     }
     
     private func getNews() {
+        activityIndicator.isHidden = false
+        activityIndicator.startAnimating()
         NetworkManager.shared.fetchNews(url: NetworkManager.shared.url) { result in
             switch result {
             case .success(let info):
                 info.articles?.forEach { self.news.append($0) }
+                DispatchQueue.main.async {
+                    self.tableView.refreshControl?.endRefreshing()
+                    self.activityIndicator.stopAnimating()
+                    self.activityIndicator.isHidden = true
+                }
                 self.tableView.reloadData()
             case .failure(let error):
                 print(error)

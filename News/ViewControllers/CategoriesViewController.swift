@@ -8,16 +8,21 @@
 import UIKit
 
 class CategoriesViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, UISearchBarDelegate {
+    // MARK: - Public Properties
+    var delegate: CategoriesViewControllerDelegate!
     
+    // MARK: - Private Properties
     private let categories = ["business", "entertainment", "general", "health", "science", "sports", "technology"]
+   
+    // MARK: - Views
     private let searchVC = UISearchController(searchResultsController: nil)
     
     lazy private var collectionViewFlowLayout: UICollectionViewFlowLayout = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .vertical
-        layout.minimumLineSpacing = 2
-        layout.minimumInteritemSpacing = 2
-        layout.itemSize = CGSize(width: view.frame.size.width / 2.1 - 1, height: view.frame.size.height / 3.5 - 1)
+        layout.minimumLineSpacing = 3
+        layout.minimumInteritemSpacing = 1
+        layout.itemSize = CGSize(width: view.frame.size.width / 2.05 - 1, height: view.frame.size.height / 4 - 1)
         return layout
     }()
     
@@ -26,10 +31,13 @@ class CategoriesViewController: UIViewController, UICollectionViewDataSource, UI
         collectionView.register(CategoryViewCell.self, forCellWithReuseIdentifier: CategoryViewCell.cellID)
         return collectionView
     }()
-
+    
+    // MARK: - Override Methods
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
+        
+        delegate.setEmptyBadgeValue()
         
         collectionView.delegate = self
         collectionView.dataSource = self
@@ -42,7 +50,7 @@ class CategoriesViewController: UIViewController, UICollectionViewDataSource, UI
 //        collectionView.frame = view.bounds
     }
 
-    // MARK: UICollectionViewDataSource
+    // MARK: - UICollectionViewDataSource, UICollectionViewDelegate
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         categories.count
     }
@@ -58,21 +66,23 @@ class CategoriesViewController: UIViewController, UICollectionViewDataSource, UI
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let categoryVC = MainViewController()
         NetworkManager.shared.category = categories[indexPath.row]
-//        present(categoryVC, animated: true)
-                navigationController?.pushViewController(categoryVC, animated: true)
+        categoryVC.navigationTitle = categories[indexPath.row].capitalized
+        navigationController?.pushViewController(categoryVC, animated: true)
     }
     
+    // MARK: - Private Methods
     private func setCollectionViewConstraints() {
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             collectionView.topAnchor.constraint(equalTo: view.topAnchor),
-            collectionView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 8),
-            collectionView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -8),
+            collectionView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 4),
+            collectionView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -4),
 //            collectionView.widthAnchor.constraint(equalTo: view.widthAnchor),
             collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
     }
     
+    // MARK: - Search Bar
     private func createSearchBar() {
         navigationItem.searchController = searchVC
         searchVC.searchBar.delegate = self
@@ -86,8 +96,4 @@ class CategoriesViewController: UIViewController, UICollectionViewDataSource, UI
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
 //        NetworkManager.shared.searchKeyword = ""
     }
-
-    
-    
-
 }

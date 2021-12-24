@@ -10,11 +10,13 @@ import UIKit
 class CategoryViewCell: UICollectionViewCell {
     static let cellID = "categoryID"
     
+    // MARK: - Views
     lazy private var picture: UIImageView = {
         let picture = UIImageView()
         picture.layer.cornerRadius = 3
         picture.layer.masksToBounds = true
         picture.backgroundColor = .purple
+        picture.contentMode = .scaleAspectFill
         return picture
     }()
     
@@ -26,10 +28,9 @@ class CategoryViewCell: UICollectionViewCell {
         return textLabel
     }()
     
-    
+    // MARK: - Init
     override init(frame: CGRect) {
         super.init(frame: frame)
-//        contentView.backgroundColor = .systemRed
         addSubviews(picture, titleLabel)
         setPictureConstraints()
         setTitleLabelConstraints()
@@ -40,11 +41,13 @@ class CategoryViewCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    // MARK: - Configure Cell
     func configure(cell: UICollectionViewCell, category: String) {
-        picture.image = UIImage(systemName: "phone")
-        titleLabel.text = category
+        picture.image = UIImage(named: category)
+        titleLabel.text = category.capitalized
     }
     
+    // MARK: - Set Views
     private func addSubviews(_ views: UIView...) {
         views.forEach { addSubview($0) }
     }

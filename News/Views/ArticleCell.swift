@@ -8,9 +8,9 @@
 import UIKit
 
 class ArticleCell: UITableViewCell {
-    
     static let cellID = "newsID"
     
+    // MARK: - Views
     lazy private var photo: ArticleImageView = {
         let photo = ArticleImageView()
         photo.layer.cornerRadius = 7
@@ -21,18 +21,19 @@ class ArticleCell: UITableViewCell {
 
     lazy private var titleLabel: UILabel = {
         let textLabel = UILabel()
-        textLabel.numberOfLines = 2
-        textLabel.font = .systemFont(ofSize: 16, weight: .semibold)
+        textLabel.numberOfLines = 0
+        textLabel.font = .systemFont(ofSize: 14, weight: .semibold)
         return textLabel
     }()
     
     lazy private var subtitleLabel: UILabel = {
         let subtitleLabel = UILabel()
         subtitleLabel.numberOfLines = 3
-        subtitleLabel.font = .systemFont(ofSize: 12, weight: .light)
+        subtitleLabel.font = .systemFont(ofSize: 11, weight: .light)
         return subtitleLabel
     }()
     
+    // MARK: - Init
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         addSubviews(photo, titleLabel, subtitleLabel)
@@ -43,12 +44,14 @@ class ArticleCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    // MARK: - Configure Cell
     func configure(cell: UITableViewCell, news: Article) {
         titleLabel.text = news.title
         subtitleLabel.text = news.description
         photo.fetchImage(from: news.urlToImage ?? "")
     }
     
+    // MARK: - Set Views
     private func addSubviews(_ views: UIView...) {
         views.forEach { addSubview($0) }
     }
@@ -67,7 +70,7 @@ class ArticleCell: UITableViewCell {
             photo.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -10),
             photo.leftAnchor.constraint(equalTo: leftAnchor, constant: 16),
             photo.widthAnchor.constraint(equalToConstant: 120),
-            photo.heightAnchor.constraint(equalToConstant: 96)
+            photo.heightAnchor.constraint(equalToConstant: 100)
         ])
     }
     
@@ -77,7 +80,7 @@ class ArticleCell: UITableViewCell {
             titleLabel.topAnchor.constraint(equalTo: photo.topAnchor),
             titleLabel.rightAnchor.constraint(equalTo: rightAnchor, constant: -16),
             titleLabel.bottomAnchor.constraint(equalTo: subtitleLabel.topAnchor, constant: -5),
-            titleLabel.heightAnchor.constraint(equalToConstant: 40)
+            titleLabel.heightAnchor.constraint(greaterThanOrEqualToConstant: 60)
         ])
     }
     

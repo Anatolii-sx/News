@@ -110,8 +110,8 @@
 		9CA0EF8E274EAD3800BE305E /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
-				9CA0EF7D274EA80500BE305E /* MainViewController.swift */,
 				9CCF7B49275948F500C7A53A /* TabBarViewController.swift */,
+				9CA0EF7D274EA80500BE305E /* MainViewController.swift */,
 				9CCF7B4B2759515B00C7A53A /* CategoriesViewController.swift */,
 			);
 			path = ViewControllers;

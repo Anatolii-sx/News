@@ -10,7 +10,7 @@ import UIKit
 class ArticleImageView: UIImageView {
     func fetchImage(from url: String) {
         guard let url = URL(string: url) else {
-//            image = UIImage(systemName: "phone")
+            image = UIImage(named: "noImage")
             return
         }
         
