@@ -21,7 +21,7 @@ class CategoryArticleTableViewCell: UITableViewCell {
 
     lazy private var titleLabel: UILabel = {
         let textLabel = UILabel()
-        textLabel.numberOfLines = 0
+        textLabel.numberOfLines = 3
         textLabel.font = .systemFont(ofSize: 14, weight: .semibold)
         return textLabel
     }()
@@ -33,10 +33,17 @@ class CategoryArticleTableViewCell: UITableViewCell {
         return subtitleLabel
     }()
     
+    lazy private var dateLabel: UILabel = {
+        let dateLabel = UILabel()
+        dateLabel.numberOfLines = 1
+        dateLabel.font = .systemFont(ofSize: 11, weight: .ultraLight)
+        return dateLabel
+    }()
+    
     // MARK: - Init
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        addSubviews(photo, titleLabel, subtitleLabel)
+        addSubviews(photo, titleLabel, subtitleLabel, dateLabel)
         setViewsConstraints()
     }
     
@@ -48,7 +55,19 @@ class CategoryArticleTableViewCell: UITableViewCell {
     func configure(cell: UITableViewCell, news: Article) {
         titleLabel.text = news.title
         subtitleLabel.text = news.description
+        dateLabel.text = getFormat(date: news.publishedAt ?? "")
         photo.fetchImage(from: news.urlToImage ?? "")
+    }
+    
+    private func getFormat(date: String) -> String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyy-MM-dd'T'HH:mm:SSSZZZZZ"
+        guard let theDate = dateFormatter.date(from: date) else { return "" }
+        
+        let newDateFormatter = DateFormatter()
+        newDateFormatter.dateFormat = "dd.MM.yyyy   HH:mm"
+        
+        return newDateFormatter.string(from: theDate)
     }
     
     // MARK: - Set Views
@@ -60,6 +79,7 @@ class CategoryArticleTableViewCell: UITableViewCell {
         setPhotoConstraints()
         setTitleLabelConstraints()
         setSubtitleLabelConstraints()
+        setDateLabelConstraints()
     }
     
     private func setPhotoConstraints() {
@@ -80,7 +100,7 @@ class CategoryArticleTableViewCell: UITableViewCell {
             titleLabel.topAnchor.constraint(equalTo: photo.topAnchor),
             titleLabel.rightAnchor.constraint(equalTo: rightAnchor, constant: -16),
             titleLabel.bottomAnchor.constraint(equalTo: subtitleLabel.topAnchor, constant: -5),
-            titleLabel.heightAnchor.constraint(greaterThanOrEqualToConstant: 60)
+            titleLabel.heightAnchor.constraint(equalToConstant: 50)
         ])
     }
     
@@ -88,8 +108,19 @@ class CategoryArticleTableViewCell: UITableViewCell {
         subtitleLabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             subtitleLabel.rightAnchor.constraint(equalTo: titleLabel.rightAnchor),
-            subtitleLabel.bottomAnchor.constraint(equalTo: photo.bottomAnchor),
-            subtitleLabel.leftAnchor.constraint(equalTo: titleLabel.leftAnchor)
+            subtitleLabel.leftAnchor.constraint(equalTo: titleLabel.leftAnchor),
+            subtitleLabel.bottomAnchor.constraint(equalTo: dateLabel.topAnchor, constant: -5),
+            subtitleLabel.heightAnchor.constraint(equalToConstant: 30)
+        ])
+    }
+    
+    private func setDateLabelConstraints() {
+        dateLabel.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            dateLabel.rightAnchor.constraint(equalTo: titleLabel.rightAnchor),
+            dateLabel.bottomAnchor.constraint(equalTo: photo.bottomAnchor),
+            dateLabel.leftAnchor.constraint(equalTo: titleLabel.leftAnchor),
+            dateLabel.heightAnchor.constraint(equalToConstant: 12)
         ])
     }
 }

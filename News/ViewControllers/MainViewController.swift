@@ -185,7 +185,8 @@ extension MainViewController {
                         title: $0.title ?? "",
                         subtitle: $0.description ?? "",
                         imageURL: URL(string: $0.urlToImage ?? ""),
-                        url: $0.url ?? ""
+                        url: $0.url ?? "",
+                        date: $0.publishedAt ?? ""
                     )
                 }) ?? []
                 
@@ -211,7 +212,8 @@ extension MainViewController {
                             title: article.title ?? "",
                             subtitle: article.description ?? "",
                             imageURL: URL(string: article.urlToImage ?? ""),
-                            url: article.url ?? ""
+                            url: article.url ?? "",
+                            date: article.publishedAt ?? ""
                         )
                     )
                     let indexPath: IndexPath = IndexPath(row: (self.cellNews.count - 1), section: 0)
