@@ -1,5 +1,5 @@
 //
-//  ArticleImageView.swift
+//  MainArticleImageView.swift
 //  News
 //
 //  Created by Анатолий Миронов on 20.12.2021.
@@ -7,7 +7,7 @@
 
 import UIKit
 
-class ArticleImageView: UIImageView {
+class MainArticleImageView: UIImageView {
     func fetchImage(from url: String) {
         guard let url = URL(string: url) else {
             image = UIImage(named: "noImage")
@@ -21,7 +21,7 @@ class ArticleImageView: UIImageView {
         }
         
         // Если изображения нет, то грузим его из сети
-        ImageManager.shared.fetchImage(from: url) { data, response in
+        MainImageManager.shared.fetchImage(from: url) { data, response in
             self.image = UIImage(data: data)
             self.saveDataToCache(with: data, and: response)
         }

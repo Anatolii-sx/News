@@ -28,7 +28,7 @@ class CategoriesViewController: UIViewController, UICollectionViewDataSource, UI
     
     lazy private var collectionView: UICollectionView = {
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: collectionViewFlowLayout)
-        collectionView.register(CategoryViewCell.self, forCellWithReuseIdentifier: CategoryViewCell.cellID)
+        collectionView.register(CategoryCollectionViewCell.self, forCellWithReuseIdentifier: CategoryCollectionViewCell.cellID)
         return collectionView
     }()
     
@@ -56,7 +56,7 @@ class CategoriesViewController: UIViewController, UICollectionViewDataSource, UI
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CategoryViewCell.cellID, for: indexPath) as? CategoryViewCell else { return UICollectionViewCell() }
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CategoryCollectionViewCell.cellID, for: indexPath) as? CategoryCollectionViewCell else { return UICollectionViewCell() }
         
         let category = categories[indexPath.row]
         cell.configure(cell: cell, category: category)
@@ -64,8 +64,8 @@ class CategoriesViewController: UIViewController, UICollectionViewDataSource, UI
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let categoryVC = MainViewController()
-        NetworkManager.shared.category = categories[indexPath.row]
+        let categoryVC = CategoryViewController()
+        CategoriesNetworkManager.shared.category = categories[indexPath.row]
         categoryVC.navigationTitle = categories[indexPath.row].capitalized
         navigationController?.pushViewController(categoryVC, animated: true)
     }
@@ -90,10 +90,10 @@ class CategoriesViewController: UIViewController, UICollectionViewDataSource, UI
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         guard let text = searchBar.text, !text.isEmpty else { return }
-//        NetworkManager.shared.searchKeyword = text
+//        MainNetworkManager.shared.searchKeyword = text
     }
     
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-//        NetworkManager.shared.searchKeyword = ""
+//        MainNetworkManager.shared.searchKeyword = ""
     }
 }

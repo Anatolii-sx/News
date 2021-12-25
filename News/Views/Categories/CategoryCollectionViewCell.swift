@@ -1,5 +1,5 @@
 //
-//  CategoryViewCell.swift
+//  CategoryCollectionViewCell.swift
 //  News
 //
 //  Created by Анатолий Миронов on 20.12.2021.
@@ -7,7 +7,7 @@
 
 import UIKit
 
-class CategoryViewCell: UICollectionViewCell {
+class CategoryCollectionViewCell: UICollectionViewCell {
     static let cellID = "categoryID"
     
     // MARK: - Views

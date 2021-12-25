@@ -1,14 +1,17 @@
 //
-//  ViewController.swift
+//  CategoryViewController.swift
 //  News
 //
-//  Created by Анатолий Миронов on 24.11.2021.
+//  Created by Анатолий Миронов on 25.12.2021.
 //
 
 import UIKit
 import SafariServices
 
-class MainViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class CategoryViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+    // MARK: - Public Properties
+    var navigationTitle = ""
+    
     // MARK: - Private Properties
     private var news: [Article] = []
     
@@ -53,7 +56,7 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     lazy private var tableView: UITableView = {
         let tableView = UITableView()
-        tableView.register(MainArticleTableViewCell.self, forCellReuseIdentifier: MainArticleTableViewCell.cellID)
+        tableView.register(CategoryArticleTableViewCell.self, forCellReuseIdentifier: CategoryArticleTableViewCell.cellID)
         return tableView
     }()
     
@@ -61,7 +64,7 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
-        title = "General"
+        title = navigationTitle
         
         view.addSubview(stackView)
         view.addSubview(activityIndicator)
@@ -82,7 +85,7 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: MainArticleTableViewCell.cellID, for: indexPath) as? MainArticleTableViewCell else { return UITableViewCell() }
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: CategoryArticleTableViewCell.cellID, for: indexPath) as? CategoryArticleTableViewCell else { return UITableViewCell() }
         
         let news = news[indexPath.row]
         cell.configure(cell: cell, news: news)
@@ -139,7 +142,7 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
 }
 
 // MARK: - Refresh Controll
-extension MainViewController {
+extension CategoryViewController {
     private func setupRefreshControl() {
         tableView.refreshControl = UIRefreshControl()
         tableView.refreshControl?.transform = CGAffineTransform(scaleX: 0.75, y: 0.75)
@@ -154,29 +157,29 @@ extension MainViewController {
 }
 
 // MARK: - Private Properties Of Getting News
-extension MainViewController {
+extension CategoryViewController {
     
     private func changeCountry() {
         switch segmentedControl.selectedSegmentIndex {
         case 0:
-            MainNetworkManager.shared.country = Countries.ru
+            CategoriesNetworkManager.shared.country = CategoriesCountries.ru
         default:
-            MainNetworkManager.shared.country = Countries.us
+            CategoriesNetworkManager.shared.country = CategoriesCountries.us
         }
     }
     
     private func changePage(restart: Bool) {
         if restart {
-            MainNetworkManager.shared.page = 1
+            CategoriesNetworkManager.shared.page = 1
         } else {
-            MainNetworkManager.shared.page += 1
+            CategoriesNetworkManager.shared.page += 1
         }
     }
     
     private func getNews() {
         activityIndicator.isHidden = false
         activityIndicator.startAnimating()
-        MainNetworkManager.shared.fetchNews(url: MainNetworkManager.shared.url) { result in
+        CategoriesNetworkManager.shared.fetchNews(url: CategoriesNetworkManager.shared.url) { result in
             switch result {
             case .success(let info):
                 info.articles?.forEach { self.news.append($0) }
@@ -193,7 +196,7 @@ extension MainViewController {
     }
     
     private func getMoreNews() {
-        MainNetworkManager.shared.fetchNews(url: MainNetworkManager.shared.url) { result in
+        CategoriesNetworkManager.shared.fetchNews(url: CategoriesNetworkManager.shared.url) { result in
             switch result {
             case .success(let info):
                 info.articles?.forEach { article in
@@ -207,4 +210,3 @@ extension MainViewController {
         }
     }
 }
-

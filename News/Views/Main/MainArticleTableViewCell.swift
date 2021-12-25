@@ -7,12 +7,12 @@
 
 import UIKit
 
-class ArticleCell: UITableViewCell {
+class MainArticleTableViewCell: UITableViewCell {
     static let cellID = "newsID"
     
     // MARK: - Views
-    lazy private var photo: ArticleImageView = {
-        let photo = ArticleImageView()
+    lazy private var photo: MainArticleImageView = {
+        let photo = MainArticleImageView()
         photo.layer.cornerRadius = 7
         photo.layer.masksToBounds = true
         photo.backgroundColor = .purple

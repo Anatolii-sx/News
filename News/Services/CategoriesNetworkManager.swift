@@ -1,13 +1,13 @@
 //
-//  NetworkManager.swift
+//  CategoriesNetworkManager.swift
 //  News
 //
-//  Created by Анатолий Миронов on 28.11.2021.
+//  Created by Анатолий Миронов on 25.12.2021.
 //
 
 import Foundation
 
-enum Countries {
+enum CategoriesCountries {
     case ru, us
 }
 
@@ -15,19 +15,18 @@ enum Countries {
 //    case ru, en
 //}
 
-enum NetworkError: Error {
+enum CategoriesNetworkError: Error {
     case invalidURL
     case noData
     case decodingError
 }
 
-class NetworkManager {
-    static let shared = NetworkManager()
+class CategoriesNetworkManager {
+    static let shared = CategoriesNetworkManager()
     
-    private let token = "d44f0aea780a4c3ca5ab14697a86d904"
-//    private let token = "35d0b5eef7e44127a1a1c570f8d158b6"
+    private let token = "35d0b5eef7e44127a1a1c570f8d158b6"
     
-    var country = Countries.ru
+    var country = CategoriesCountries.ru
     var category = ""
     var page = 1
 
@@ -52,7 +51,7 @@ class NetworkManager {
     
     private init() {}
     
-    func fetchNews(url: String, completion: @escaping (Result<ObtainedInfo, NetworkError>) -> Void) {
+    func fetchNews(url: String, completion: @escaping (Result<ObtainedInfo, CategoriesNetworkError>) -> Void) {
         guard let url = URL(string: url) else {
             completion(.failure(.invalidURL))
             print(url)
@@ -78,8 +77,8 @@ class NetworkManager {
     }
 }
 
-class ImageManager {
-    static var shared = ImageManager()
+class CategoriesImageManager {
+    static var shared = CategoriesImageManager()
     
     private init() {}
     
@@ -98,3 +97,4 @@ class ImageManager {
         }.resume()
     }
 }
+
