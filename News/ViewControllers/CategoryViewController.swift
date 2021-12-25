@@ -79,6 +79,12 @@ class CategoryViewController: UIViewController, UITableViewDelegate, UITableView
         getNews()
     }
     
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        CategoriesNetworkManager.shared.country = CategoriesCountries.ru
+        CategoriesNetworkManager.shared.page = 1
+    }
+    
     // MARK: - UITableViewDelegate, UITableViewDataSource
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         news.count
