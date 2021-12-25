@@ -23,7 +23,7 @@ class TabBarViewController: UITabBarController {
     private func setTabBarViewControllers() {
         let mainNC = UINavigationController(rootViewController: MainViewController())
         let categoriesNC = UINavigationController(rootViewController: CategoriesViewController())
-        mainNC.title = "General"
+        mainNC.title = "Main"
         categoriesNC.title = "Categories"
         setViewControllers([mainNC, categoriesNC], animated: true)
         

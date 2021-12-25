@@ -11,10 +11,6 @@ enum CategoriesCountries {
     case ru, us
 }
 
-//enum Language {
-//    case ru, en
-//}
-
 enum CategoriesNetworkError: Error {
     case invalidURL
     case noData
@@ -29,15 +25,6 @@ class CategoriesNetworkManager {
     var country = CategoriesCountries.ru
     var category = ""
     var page = 1
-
-//    var searchKeyword = ""
-//    var searchLink: String {
-//        "&q=\(searchKeyword)"
-//    }
-//
-//    var searchLinkFinished: String {
-//        searchKeyword.isEmpty ? "" : searchLink
-//    }
     
     var url: String {
         "https://newsapi.org/v2/top-headlines?"

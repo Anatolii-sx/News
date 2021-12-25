@@ -10,7 +10,7 @@ import SafariServices
 
 class MainViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     // MARK: - Private Properties
-    private var news: [Article] = []
+    private var cellNews: [MainArticleTableViewCellModel] = []
     
     // MARK: - Views
     lazy private var activityIndicator: UIActivityIndicatorView = {
@@ -61,7 +61,8 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
-        title = "General"
+        navigationController?.navigationBar.prefersLargeTitles = true
+        title = "Main"
         
         view.addSubview(stackView)
         view.addSubview(activityIndicator)
@@ -78,14 +79,14 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     // MARK: - UITableViewDelegate, UITableViewDataSource
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        news.count
+        cellNews.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: MainArticleTableViewCell.cellID, for: indexPath) as? MainArticleTableViewCell else { return UITableViewCell() }
         
-        let news = news[indexPath.row]
-        cell.configure(cell: cell, news: news)
+        let cellNews = cellNews[indexPath.row]
+        cell.configure(cell: cell, cellNews: cellNews)
         
         return cell
     }
@@ -93,8 +94,8 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         
-        let news = news[indexPath.row]
-        guard let newsURL = URL(string: news.url ?? "") else { return }
+        let cellNews = cellNews[indexPath.row]
+        guard let newsURL = URL(string: cellNews.url) else { return }
         let safariViewController = SFSafariViewController(url: newsURL)
         present(safariViewController, animated: true)
     }
@@ -115,7 +116,7 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     private func clearListOfNews() {
-        news = []
+        cellNews = []
         tableView.reloadData()
         changePage(restart: true)
     }
@@ -179,13 +180,21 @@ extension MainViewController {
         MainNetworkManager.shared.fetchNews(url: MainNetworkManager.shared.url) { result in
             switch result {
             case .success(let info):
-                info.articles?.forEach { self.news.append($0) }
+                self.cellNews = info.articles?.compactMap({
+                    MainArticleTableViewCellModel(
+                        title: $0.title ?? "",
+                        subtitle: $0.description ?? "",
+                        imageURL: URL(string: $0.urlToImage ?? ""),
+                        url: $0.url ?? ""
+                    )
+                }) ?? []
+                
                 DispatchQueue.main.async {
                     self.tableView.refreshControl?.endRefreshing()
                     self.activityIndicator.stopAnimating()
                     self.activityIndicator.isHidden = true
+                    self.tableView.reloadData()
                 }
-                self.tableView.reloadData()
             case .failure(let error):
                 print(error)
             }
@@ -197,8 +206,15 @@ extension MainViewController {
             switch result {
             case .success(let info):
                 info.articles?.forEach { article in
-                    self.news.append(article)
-                    let indexPath: IndexPath = IndexPath(row: (self.news.count - 1), section: 0)
+                    self.cellNews.append(
+                        MainArticleTableViewCellModel(
+                            title: article.title ?? "",
+                            subtitle: article.description ?? "",
+                            imageURL: URL(string: article.urlToImage ?? ""),
+                            url: article.url ?? ""
+                        )
+                    )
+                    let indexPath: IndexPath = IndexPath(row: (self.cellNews.count - 1), section: 0)
                     self.tableView.insertRows(at: [indexPath], with: .none)
                 }
             case .failure(let error):

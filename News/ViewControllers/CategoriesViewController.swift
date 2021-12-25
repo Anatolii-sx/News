@@ -12,17 +12,15 @@ class CategoriesViewController: UIViewController, UICollectionViewDataSource, UI
     var delegate: CategoriesViewControllerDelegate!
     
     // MARK: - Private Properties
-    private let categories = ["business", "entertainment", "general", "health", "science", "sports", "technology"]
+    private let categories = ["business", "technology", "entertainment", "health", "science", "sports", ]
    
     // MARK: - Views
-    private let searchVC = UISearchController(searchResultsController: nil)
-    
     lazy private var collectionViewFlowLayout: UICollectionViewFlowLayout = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .vertical
         layout.minimumLineSpacing = 3
         layout.minimumInteritemSpacing = 1
-        layout.itemSize = CGSize(width: view.frame.size.width / 2.05 - 1, height: view.frame.size.height / 4 - 1)
+        layout.itemSize = CGSize(width: view.frame.size.width / 2.05 - 1, height: view.frame.size.height / 4.2 - 1)
         return layout
     }()
     
@@ -36,6 +34,9 @@ class CategoriesViewController: UIViewController, UICollectionViewDataSource, UI
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
+        navigationController?.navigationBar.tintColor = #colorLiteral(red: 0.8549019694, green: 0.250980407, blue: 0.4784313738, alpha: 0.7012882864)
+        navigationController?.navigationBar.prefersLargeTitles = true
+        title = "Categories"
         
         delegate.setEmptyBadgeValue()
         
@@ -44,10 +45,7 @@ class CategoriesViewController: UIViewController, UICollectionViewDataSource, UI
         view.addSubview(collectionView)
         setCollectionViewConstraints()
         
-        createSearchBar()
         collectionView.showsVerticalScrollIndicator = false
-        
-//        collectionView.frame = view.bounds
     }
 
     // MARK: - UICollectionViewDataSource, UICollectionViewDelegate
@@ -77,23 +75,7 @@ class CategoriesViewController: UIViewController, UICollectionViewDataSource, UI
             collectionView.topAnchor.constraint(equalTo: view.topAnchor),
             collectionView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 4),
             collectionView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -4),
-//            collectionView.widthAnchor.constraint(equalTo: view.widthAnchor),
             collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
-    }
-    
-    // MARK: - Search Bar
-    private func createSearchBar() {
-        navigationItem.searchController = searchVC
-        searchVC.searchBar.delegate = self
-    }
-    
-    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        guard let text = searchBar.text, !text.isEmpty else { return }
-//        MainNetworkManager.shared.searchKeyword = text
-    }
-    
-    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-//        MainNetworkManager.shared.searchKeyword = ""
     }
 }

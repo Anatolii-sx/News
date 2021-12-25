@@ -7,12 +7,27 @@
 
 import UIKit
 
+class MainArticleTableViewCellModel {
+    let title: String
+    let subtitle: String
+    let imageURL: URL?
+    var imageData: Data? = nil
+    var url: String
+    
+    init(title: String, subtitle: String, imageURL: URL?, url: String) {
+        self.title = title
+        self.subtitle = subtitle
+        self.imageURL = imageURL
+        self.url = url
+    }
+}
+
 class MainArticleTableViewCell: UITableViewCell {
     static let cellID = "newsID"
     
     // MARK: - Views
-    lazy private var photo: MainArticleImageView = {
-        let photo = MainArticleImageView()
+    lazy private var photo: UIImageView = {
+        let photo = UIImageView()
         photo.layer.cornerRadius = 7
         photo.layer.masksToBounds = true
         photo.backgroundColor = .purple
@@ -45,10 +60,22 @@ class MainArticleTableViewCell: UITableViewCell {
     }
     
     // MARK: - Configure Cell
-    func configure(cell: UITableViewCell, news: Article) {
-        titleLabel.text = news.title
-        subtitleLabel.text = news.description
-        photo.fetchImage(from: news.urlToImage ?? "")
+    func configure(cell: UITableViewCell, cellNews: MainArticleTableViewCellModel) {
+        titleLabel.text = cellNews.title
+        subtitleLabel.text = cellNews.subtitle
+        
+        
+        if let data = cellNews.imageData {
+            photo.image = UIImage(data: data)
+        } else if let url = cellNews.imageURL {
+            URLSession.shared.dataTask(with: url) { data, _, error in
+                guard let data = data, error == nil else { return }
+                cellNews.imageData = data
+                DispatchQueue.main.async {
+                    self.photo.image = UIImage(data: data)
+                }
+            }.resume()
+        }
     }
     
     // MARK: - Set Views
