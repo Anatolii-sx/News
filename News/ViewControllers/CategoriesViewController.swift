@@ -34,6 +34,7 @@ class CategoriesViewController: UIViewController, UICollectionViewDataSource, UI
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
+        collectionView.backgroundColor = .white
         navigationController?.navigationBar.tintColor = #colorLiteral(red: 0.8549019694, green: 0.250980407, blue: 0.4784313738, alpha: 0.7012882864)
         navigationController?.navigationBar.prefersLargeTitles = true
         title = "Categories"
